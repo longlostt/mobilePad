@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Pad</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <script src="https://kit.fontawesome.com/c5c731253d.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="overlay"></div>
+    <div class="alerts">
+    </div>
+
+    <div class="wrapper">
+        <div class="open-list">
+            <p class="fa-solid fa-chevron-right"></p>
+            <p class="fa-solid fa-chevron-right"></p>
+        </div>
+
+        <div class="contact-list">
+            <div class="contact">
+                <div class="contact-name">123</div>
+                <div class="contact-number">40</div>
+                <div class="call-btn svg-item"><i class="fa-solid fa-phone"></i></div>
+            </div>
+            <div class="contact">
+                <div class="contact-name">40</div>
+                <div class="contact-number">123</div>
+                <div class="call-btn svg-item"><i class="fa-solid fa-phone"></i></div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="pad-output">
+                <div class="output">0</div>
+                <span class="name"></span>
+            </div>
+            <div class="pad-input">
+                <div class="input-item" data-key="1">
+                    <span class="number" style="margin-top: 0;">1</span>
+
+                </div>
+                <div class="input-item" data-key="2">
+                    <span class="number">2</span>
+                    <span class="letters">ABC</span>
+                </div>
+                <div class="input-item" data-key="3">
+                    <span class="number">3</span>
+                    <span class="letters">DEF</span>
+                </div>
+                <div class="input-item" data-key="4">
+                    <span class="number">4</span>
+                    <span class="letters">GHI</span>
+                </div>
+                <div class="input-item" data-key="5">
+                    <span class="number">5</span>
+                    <span class="letters">JKL</span>
+                </div>
+                <div class="input-item" data-key="6">
+                    <span class="number">6</span>
+                    <span class="letters">MNO</span>
+                </div>
+                <div class="input-item" data-key="7">
+                    <span class="number">7</span>
+                    <span class="letters">PQRS</span>
+                </div>
+                <div class="input-item" data-key="8">
+                    <span class="number">8</span>
+                    <span class="letters">TUV</span>
+                </div>
+                <div class="input-item" data-key="9">
+                    <span class="number">9</span>
+                    <span class="letters">XYZ</span>
+                </div>
+                <div class="input-item" data-key="*">
+                    <span class="number">*</span>
+
+                </div>
+                <div class="input-item" data-key="0">
+                    <span class="number" style="margin-top: 0;">0</span>
+
+                </div>
+                <div class="input-item" data-key="#">
+                    <span class="number" style="margin-top: 0;">#</span>
+
+                </div>
+                <div class="input-item svg-item add-contact">
+                    <i class="fa-regular fa-plus"></i>
+                </div>
+                <div class="input-item svg-item" id="phone">
+                    <i class="fa-solid fa-phone"></i>
+
+                </div>
+                <div class="svg-item input-item" id="backspace" data-key="Backspace">
+                    <i class="fa-solid fa-delete-left"></i>
+                </div>
+                
+                <div id="removeContact">
+                    <i class="fa-solid fa-trash-can"></i>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
