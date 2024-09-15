@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/styles/login-style.css">
+    <script src="/scripts/login-script.js" async></script>
+</head>
+
+<body>
+    <div class="alerts"></div>
+    <div class="overlay"></div>
+    <div class="login-container">
+        <form action="/login" method="post" class="login-form">
+            <div class="login-row">
+                <h4><label for="username">Username</label></h4>
+                <input type="text" id="username" class="userinput">
+            </div>
+            <div class="login-row">
+                <h4><label for="password">Password</label></h4>
+                <input type="password" id="password" class="userinput">
+            </div>
+            <div class="login-row">
+                <input type="submit" style="font-family: aftika;" value="Login" class="login-submit">
+            </div>
+            <% if (messages.error.length> 0) { %>
+                <div style="color: rgb(255, 72, 72);">
+                    <%= messages.error.join(', ') %> <!-- Display error messages -->
+                </div>
+            <% } %>
+        
+            <% if (messages.success.length > 0) { %>
+                <div style="color: rgb(0, 123, 255);">
+                    <%= messages.success.join(' , ') %> <!-- Display success messages -->
+                </div>
+            <% } %>
+            <div class="login-row options">
+                <p>Don't have an account? <a href="./signup" id="signUp">Sign Up</a></p>
+            </div>
+            <!-- <div class="login-row options">
+            <a href="http://127.0.0.1:3000/ICT/Mobile%20Pad/main/index.html">Continue as Guest</a> // REWORK GUEST VISIT COMPLETELY!!
+        </div> -->
+        </form>
+    </div>
+   
+    
+</body>
+
+</html>
