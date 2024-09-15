@@ -1,0 +1,23 @@
+{
+  "name": "mobilepad",
+  "version": "1.0.0",
+  "description": "mobile pad page that mentions a num pad, a contact list, and a very simple login/signup system based on localStorage (4/22/24)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "mongodb": "^6.8.0",
+    "mongoose": "^8.5.3",
+    "morgan": "^1.10.0"
+  }
+}
