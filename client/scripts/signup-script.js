@@ -1,84 +1,86 @@
-const handleFormSubmit = (e) => {
-    e.preventDefault();
+// document.addEventListener('DOMContentLoaded', () => {
+//     const handleFormSubmit = (e) => {
+//         // Prevent the default form submission behavior
+//         e.preventDefault();
 
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const passwordConfirmInput = document.getElementById('passwordConfirm');
-    
-    const username = usernameInput.value;
-    const password = passwordInput.value;
-    const passwordConfirm = passwordConfirmInput.value;
+//         const usernameInput = document.getElementById('username');
+//         const passwordInput = document.getElementById('password');
+//         const passwordConfirmInput = document.getElementById('passwordConfirm');
+        
+//         const username = usernameInput.value;
+//         const password = passwordInput.value;
+//         const passwordConfirm = passwordConfirmInput.value;
 
-    // Reset error messages
-    resetErrorMessages();
+//         // Clear previous errors
+//         resetErrorMessages();
 
-    let valid = true;
+//         let valid = true;
+//         const errors = [];
 
-    // Check if fields are filled
-    if (!username) {
-        document.getElementById('userLength').innerText = 'Username is required!';
-        document.getElementById('userLength').style.display = 'block';
-        valid = false;
-    } else if (username.length < 8) {
-        document.getElementById('userLength').innerText = 'Username must be at least 8 characters long!';
-        document.getElementById('userLength').style.display = 'block';
-        valid = false;
-    }
+//         // Check if fields are filled and valid
+//         if (!username) {
+//             errors.push({ message: 'Username is required!' });
+//             valid = false;
+//         } else if (username.length < 8) {
+//             errors.push({ message: 'Username must be at least 8 characters long!' });
+//             valid = false;
+//         }
 
-    if (!password) {
-        document.getElementById('passLength').innerText = 'Password is required!';
-        document.getElementById('passLength').style.display = 'block';
-        valid = false;
-    } else {
-        // Password validation
-        if (password.length < 8) {
-            document.getElementById('passLength').innerText = 'Password must be at least 8 characters long!';
-            document.getElementById('passLength').style.display = 'block';
-            valid = false;
-        }
-        if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
-            document.getElementById('char').innerText = 'Password must contain a special character!';
-            document.getElementById('char').style.display = 'block';
-            valid = false;
-        }
-        if (!/[a-zA-Z]/.test(password)) {
-            document.getElementById('letter').innerText = 'Password must contain at least one letter!';
-            document.getElementById('letter').style.display = 'block';
-            valid = false;
-        }
-        if (!/[0-9]/.test(password)) {
-            document.getElementById('number').innerText = 'Password must contain at least one number!';
-            document.getElementById('number').style.display = 'block';
-            valid = false;
-        }
-    }
+//         if (!password) {
+//             errors.push({ message: 'Password is required!' });
+//             valid = false;
+//         } else {
+//             if (password.length < 8) {
+//                 errors.push({ message: 'Password must be at least 8 characters long!' });
+//                 valid = false;
+//             }
+//             if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
+//                 errors.push({ message: 'Password must contain a special character!' });
+//                 valid = false;
+//             }
+//             if (!/[a-zA-Z]/.test(password)) {
+//                 errors.push({ message: 'Password must contain at least one letter!' });
+//                 valid = false;
+//             }
+//             if (!/[0-9]/.test(password)) {
+//                 errors.push({ message: 'Password must contain at least one number!' });
+//                 valid = false;
+//             }
+//         }
 
-    if (!passwordConfirm) {
-        document.getElementById('notMatch').innerText = 'Please confirm your password!';
-        document.getElementById('notMatch').style.display = 'block';
-        valid = false;
-    } else if (password !== passwordConfirm) {
-        document.getElementById('notMatch').innerText = 'Passwords do not match!';
-        document.getElementById('notMatch').style.display = 'block';
-        valid = false;
-    }
+//         if (!passwordConfirm) {
+//             errors.push({ message: 'Please confirm your password!' });
+//             valid = false;
+//         } else if (password !== passwordConfirm) {
+//             errors.push({ message: 'Passwords do not match!' });
+//             valid = false;
+//         }
 
-    // Submit form if everything is valid
-    if (valid) {
-        document.getElementById('signupForm').submit();
-    }
+//         // Display errors if validation fails
+//         if (!valid) {
+//             displayErrorMessages(errors);
+//         } else {
+//             // If everything is valid, submit the form programmatically
+//             document.getElementById('signupForm').submit();
+//         }
+//     };
 
-    // document.getElementById('signupForm').addEventListener('submit', function(e) {
-    //     e.preventDefault();
-    //     document.getElementById('signUp').disabled = true;
-    // });
-    // that dont work for some reason.
-};
+//     const resetErrorMessages = () => {
+//         const errorContainer = document.getElementById('errorContainer');
+//         errorContainer.innerHTML = ''; // Clear existing errors
+//     };
 
-const resetErrorMessages =  () => {
-    const errorMessages = document.querySelectorAll('.errMessage');
-    errorMessages.forEach(message => message.style.display = 'none');
-};
+//     const displayErrorMessages = (errors) => {
+//         const errorContainer = document.getElementById('errorContainer');
+//         errors.forEach(error => {
+//             const errorElement = document.createElement('p');
+//             errorElement.classList.add('errMessage');
+//             errorElement.style.color = 'red';
+//             errorElement.innerText = error.message;
+//             errorContainer.appendChild(errorElement);
+//         });
+//     };
 
-
-document.getElementById('signUp').addEventListener('click', handleFormSubmit);
+//     // Bind the function to the form's submit event
+//     document.getElementById('signupForm').addEventListener('submit', handleFormSubmit);
+// });

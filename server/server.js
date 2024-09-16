@@ -64,14 +64,15 @@ app.get('/login', (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { password, username } = req.body;
-    console.log(req.body)
     const foundUser = await User.findAndValidate(username, password);
 
     if (foundUser) {
         req.session.user_id = foundUser._id;
-        return res.json({ message: 'Login successful' });
+        console.log(req.body);
+        res.json({ message: 'Login successful' });
     } else {
-        return res.status(401).json({ error: 'Invalid username or password' });
+        console.log(req.body);
+        res.json({error: 'Invalid username or password!'});
     }
 });
 
