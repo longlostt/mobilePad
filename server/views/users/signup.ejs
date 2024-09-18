@@ -30,19 +30,19 @@
                 <h4><label for="password">Create password</label></h4>
                 <input type="password" name="password" id="password" class="userinput"> 
                 <% if (messages.error.includes('Password must be at least 8 characters long!')) { %>
-                    <p class="errMessage" style="display:none;">Password must be at least 8 characters long!</p>
+                    <p class="errMessage" style="display:block;">Password must be at least 8 characters long!</p>
                 <% } %>
                 <% if (messages.error.includes('Password must contain a special character!')) { %>
-                    <p class="errMessage" style="display:none;">Password must contain a special character!</p>
+                    <p class="errMessage" style="display:block;">Password must contain a special character!</p>
                 <% } %>
                 <% if (messages.error.includes('Password must contain a letter!')) { %>
-                     <p class="errMessage" style="display:none;">Password must contain a letter!</p>
+                     <p class="errMessage" style="display:block;">Password must contain a letter!</p>
                 <% } %>
                 <% if (messages.error.includes('Password must contain a number!')) { %>
-                    <p class="errMessage" style="display:none;">Password must contain a number!</p>
+                    <p class="errMessage" style="display:block;">Password must contain a number!</p>
                 <% } %>
                 <% if (messages.error.includes('Passwords do not match!')) { %>
-                    <p class="errMessage" style="display:none;">Passwords do not match!</p>
+                    <p class="errMessage" style="display:block;">Passwords do not match!</p>
                 <% } %>
                 
             </div>

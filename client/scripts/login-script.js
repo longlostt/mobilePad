@@ -1,4 +1,4 @@
-// const { response } = require("express");
+// // No need to require 'express' in a front-end script
 
 // // alerts
 // const alertsContainer = document.querySelector('.alerts');

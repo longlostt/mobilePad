@@ -64,15 +64,13 @@ app.get('/login', (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { password, username } = req.body;
+    console.log(`given credentials:\nuser:${username}\npass:${password}`);
     const foundUser = await User.findAndValidate(username, password);
-
     if (foundUser) {
         req.session.user_id = foundUser._id;
-        console.log(req.body);
         res.json({ message: 'Login successful' });
     } else {
-        console.log(req.body);
-        res.json({error: 'Invalid username or password!'});
+       res.status(401).json({ message: 'Invalid credentials' });
     }
 });
 
@@ -94,40 +92,33 @@ app.post('/signup', async (req, res) => {
 
     // Validate username length
     if (username.length < 8) {
-        console.log('Username must be at least 8 characters long!');
         messages.push('Username must be at least 8 characters long!');
     }
 
     // Validate password length
     if (password.length < 8) {
-        console.log('Password must be at least 8 characters long!');
         messages.push('Password must be at least 8 characters long!');
     }
 
     if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
-        console.log('Password must contain a special character!');
         messages.push('Password must contain a special character!');
     }
 
     if (!/[a-zA-Z]/.test(password)) {
-        console.log('Password must contain a letter!');
         messages.push('Password must contain a letter!');
     }
 
     if (!/[0-9]/.test(password)) {
-        console.log('Password must contain a number!');
         messages.push('Password must contain a number!');
     }
 
     if (password !== passwordConfirm) {
-        console.log('Passwords do not match!');
         messages.push('Passwords do not match!');
     }
 
     // Check if the username already exists in the database
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-        console.log('Username already exists!');
         messages.push('Username already exists!');
     }
 
@@ -137,7 +128,6 @@ app.post('/signup', async (req, res) => {
         return res.redirect('/signup');
     }
 
-    console.log('all good');
     // If no messages, proceed to save the user
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = new User({ username, password: hashedPassword });
