@@ -87,47 +87,58 @@ app.get('/signup', (req, res) => {
 
 
 
-app.post('/signup', async (req, res) => {
+app.post('/signup', async (req, res) => { 
     const { username, password, passwordConfirm } = req.body;
-    let errors = [];
+    // Initialize an empty array to store flash messages
+    const messages = [];
 
     // Validate username length
     if (username.length < 8) {
-        errors.push({ field: 'userLength', message: 'Username must be at least 8 characters long!' });
+        console.log('Username must be at least 8 characters long!');
+        messages.push('Username must be at least 8 characters long!');
     }
-    
+
     // Validate password length
     if (password.length < 8) {
-        errors.push({ field: 'passLength', message: 'Password must be at least 8 characters long!' });
+        console.log('Password must be at least 8 characters long!');
+        messages.push('Password must be at least 8 characters long!');
     }
 
     if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
-        errors.push({ field: 'char', message: 'Password must contain a special character!' });
+        console.log('Password must contain a special character!');
+        messages.push('Password must contain a special character!');
     }
 
     if (!/[a-zA-Z]/.test(password)) {
-        errors.push({ field: 'letter', message: 'Password must contain a letter!' });
+        console.log('Password must contain a letter!');
+        messages.push('Password must contain a letter!');
     }
 
     if (!/[0-9]/.test(password)) {
-        errors.push({ field: 'number', message: 'Password must contain a number!' });
+        console.log('Password must contain a number!');
+        messages.push('Password must contain a number!');
     }
 
     if (password !== passwordConfirm) {
-        errors.push({ field: 'notMatch', message: 'Passwords do not match!' });
+        console.log('Passwords do not match!');
+        messages.push('Passwords do not match!');
     }
 
+    // Check if the username already exists in the database
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-        errors.push({ field: 'userLength', message: 'Username already exists!' });
+        console.log('Username already exists!');
+        messages.push('Username already exists!');
     }
 
-    // If there are errors, render the form with error messages
-    if (errors.length > 0) {
-        return res.render('users/signup', { errors, data: req.body });
+    // If there are messages, store them in flash and redirect to signup page
+    if (messages.length > 0) {
+        req.flash('error', messages);
+        return res.redirect('/signup');
     }
 
-    // If no errors, proceed to save the user
+    console.log('all good');
+    // If no messages, proceed to save the user
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = new User({ username, password: hashedPassword });
     await user.save();
@@ -135,11 +146,8 @@ app.post('/signup', async (req, res) => {
     req.session.user_id = user._id;
     req.flash('success', 'Account created successfully!');
     return res.redirect('/login');
-
-
-    // 1. fix login page
-    // 2. redirect to login without access to index till they login. (or redirect straight to index idc)
 });
+
 
 
 

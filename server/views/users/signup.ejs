@@ -16,12 +16,35 @@
             <div class="signup-row">
                 <h4><label for="username">Create username</label></h4>
                 <input type="text" name="username" id="username" class="userinput">
+                <% if (messages.error.includes('Username must be at least 8 characters long!')) { %>
+                    <p class="errMessage" style="display:block;">Username must be at least 8 characters long!</p>
+                <% } %>
+                <!-- Server-side flash message for username already exists -->
+                <% if (messages.error.includes('Username already exists!')) { %>
+                    <p class="errMessage" style="color: red; display: block;">Username already exists! Please choose a different one.</p>
+                <% } %>
             </div>
 
             <!-- Password Section -->
             <div class="signup-row">
                 <h4><label for="password">Create password</label></h4>
-                <input type="password" name="password" id="password" class="userinput">
+                <input type="password" name="password" id="password" class="userinput"> 
+                <% if (messages.error.includes('Password must be at least 8 characters long!')) { %>
+                    <p class="errMessage" style="display:none;">Password must be at least 8 characters long!</p>
+                <% } %>
+                <% if (messages.error.includes('Password must contain a special character!')) { %>
+                    <p class="errMessage" style="display:none;">Password must contain a special character!</p>
+                <% } %>
+                <% if (messages.error.includes('Password must contain a letter!')) { %>
+                     <p class="errMessage" style="display:none;">Password must contain a letter!</p>
+                <% } %>
+                <% if (messages.error.includes('Password must contain a number!')) { %>
+                    <p class="errMessage" style="display:none;">Password must contain a number!</p>
+                <% } %>
+                <% if (messages.error.includes('Passwords do not match!')) { %>
+                    <p class="errMessage" style="display:none;">Passwords do not match!</p>
+                <% } %>
+                
             </div>
 
             <!-- Password Confirm Section -->
@@ -30,15 +53,6 @@
                 <input type="password" name="passwordConfirm" id="passwordConfirm" class="userinput">
             </div>
 
-            <!-- Error Container for Frontend/Backend Validation -->
-            <div id="errorContainer">
-                <% if (messages.error && messages.error.length > 0) { %>
-                    <% messages.error.forEach(function(error) { %>
-                        <p class="errMessage" style="color: red;"><%= error.message %></p>
-                    <% }); %>
-                <% } %>
-            </div>
-            
             <!-- Success message (if any) -->
             <% if (messages.success.length > 0) { %>
                 <div class="flash-messages" style="color: green;">
@@ -50,6 +64,8 @@
             <div class="signup-row">
                 <input type="submit" value="Sign Up" id="signUp" class="signup-submit">
             </div>
+
+            
         </form>
     </div>
 </body>
