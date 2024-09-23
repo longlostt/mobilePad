@@ -68,9 +68,10 @@ app.post('/login', async (req, res) => {
     const foundUser = await User.findAndValidate(username, password);
     if (foundUser) {
         req.session.user_id = foundUser._id;
-        res.json({ message: 'Login successful' });
+        res.redirect('/index');
     } else {
-       res.status(401).json({ message: 'Invalid credentials' });
+        req.flash('error', 'Invalid username or password!');
+        res.status(401).redirect('/login');
     }
 });
 
@@ -85,7 +86,7 @@ app.get('/signup', (req, res) => {
 
 
 
-app.post('/signup', async (req, res) => { 
+app.post('/signup', async (req, res) => {
     const { username, password, passwordConfirm } = req.body;
     // Initialize an empty array to store flash messages
     const messages = [];
@@ -129,8 +130,7 @@ app.post('/signup', async (req, res) => {
     }
 
     // If no messages, proceed to save the user
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const user = new User({ username, password: hashedPassword });
+    const user = new User({ username, password });
     await user.save();
 
     req.session.user_id = user._id;
