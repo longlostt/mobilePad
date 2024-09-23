@@ -50,21 +50,56 @@ function hideAlert() {
 }
 
 // Event listener for "Add Contact" button
-addContactButton.addEventListener('click', function () {
+addContactButton.addEventListener('click', async function () {
+    console.log('Add Contact button clicked');
     if (output.innerText == '' || output.innerText == '0') {
+        console.log('No phone number entered');
         const alertMarkup = createAlert("Input phone number first!", false, "OK", '', "numAlert");
         showAlert(alertMarkup);
     } else {
         if (outputName.innerText == '') {
-            const alertMarkup = createAlert("Enter contact name", true, "Add", "Nevermind", "addAlert");
-            showAlert(alertMarkup);
-        } else {
-            const alertMarkup = createAlert('Contact already exists!', false, 'OK', false, '')
-            showAlert(alertMarkup)
-            return;
+            const alertMarkup = createAlert("Enter contact name:", true, "Save", "Cancel", "nameAlert");
+             showAlert(alertMarkup);
+
+            document.querySelector('#nameButton').addEventListener('click', function () {
+                console.log('Save button clicked');
+                const contactName = document.querySelector('.alertInput').value;
+                const contactNumber = output.innerText;
+                console.log('Contact Name:', contactName);
+                console.log('Contact Number:', contactNumber);
+
+                // Send contact data to the server
+                fetch('/contacts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: contactName, phone: contactNumber })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Server response:', data);
+                    if (data.success) {
+                        // Add contact to the UI
+                        const contactMarkup = `<div class="contact">
+                            <span class="contact-name">${contactName}</span>
+                            <span class="contact-number">${contactNumber}</span>
+                        </div>`;
+                        contacts.innerHTML += contactMarkup;
+                        hideAlert();
+                    } else {
+                        // Handle error
+                        console.log('Error:', data.message);
+                        const alertMarkup = createAlert(data.message, false, "OK", '', "errorAlert");
+                        showAlert(alertMarkup);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
         }
     }
-
 });
 
 // Event listener for "Remove Contact" button

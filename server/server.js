@@ -11,6 +11,7 @@ const connectDB = require('./config/db'); // db connection
 connectDB()
 
 const User = require('./models/User');
+const Contact = require('./models/Contact');
 
 
 // Middleware setup
@@ -46,13 +47,31 @@ const requireLogin = (req, res, next) => {
 }
 
 // routes
-app.get('/index', requireLogin, (req, res) => {
-    res.render('index')
-})
+app.get('/index', requireLogin, async (req, res) => {
+    const userId = req.session.user_id;
+    const contacts = await Contact.find({ user: userId });
+    res.render('index', { contacts });
+});
 
-app.get('/', (req, res) => {
-    res.send('hello')
-})
+app.post('/contacts', requireLogin, async (req, res) => {
+    const { name, phone } = req.body;
+    const userId = req.session.user_id;
+    console.log("Received request to add contact:", { name, phone, userId });
+    
+    try {
+        const newContact = new Contact({ name, phone, user: userId });
+        console.log("New contact object created:", newContact);
+        await newContact.save();
+        console.log("Contact saved successfully");
+        res.json({ success: true, message: 'Contact saved successfully!' });
+    } catch (error) {
+        console.error("Error saving contact:", error);
+        res.status(500).json({ success: false, message: 'Failed to save contact' });
+    }
+    
+    console.log("Finished processing request to add contact");
+});
+
 
 app.get('/login', (req, res) => {
     const messages = {
@@ -64,7 +83,6 @@ app.get('/login', (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { password, username } = req.body;
-    console.log(`given credentials:\nuser:${username}\npass:${password}`);
     const foundUser = await User.findAndValidate(username, password);
     if (foundUser) {
         req.session.user_id = foundUser._id;
