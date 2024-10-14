@@ -16,5 +16,7 @@ To run mongoDB:
 mongosh
 show dbs
 ```
+### View at http://localhost:3000/
+
 ## Stack
 ### Node.js, MongoDB, Express.js
