@@ -16,4 +16,5 @@ To run mongoDB:
 mongosh
 show dbs
 ```
-
+## Stack
+### Node.js, MongoDB, Express.js
