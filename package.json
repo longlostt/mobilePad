@@ -1,10 +1,10 @@
 {
   "name": "mobilepad",
   "version": "1.0.0",
-  "description": "mobile pad page that mentions a num pad, a contact list, and a very simple login/signup system based on localStorage (4/22/24)",
-  "main": "index.js",
+  "description": "",
+  "main": "./server/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",

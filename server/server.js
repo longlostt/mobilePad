@@ -48,6 +48,10 @@ const requireLogin = (req, res, next) => {
 }
 
 // routes
+app.get('/', (req, res) => {
+    res.redirect('/login');
+});
+
 app.get('/index', requireLogin, async (req, res) => {
     const userId = req.session.user_id;
     const contacts = await Contact.find({ user: userId });

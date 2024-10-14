@@ -56,7 +56,6 @@ addContactButton.addEventListener('click', async function () {
 });
 
 removeContact.addEventListener('click', async function () {
-    // Get the number from the output box
     let number = output.innerText.trim();
     
     if (!number) {
@@ -69,7 +68,7 @@ removeContact.addEventListener('click', async function () {
         const response = await fetch('/api/contacts');
         const data = await response.json();
         const userID = data.userID;
-        const contacts = data.contacts; // Assuming this is an array of contact objects
+        const contacts = data.contacts; 
         console.log('Contacts:', contacts);
 
         // Find the contact with the matching phone number
@@ -89,12 +88,11 @@ removeContact.addEventListener('click', async function () {
         }
 
         // Remove the contact from the DOM
-        const contactDiv = findContactByNumber(number); // Use your existing function
+        const contactDiv = findContactByNumber(number); 
         if (contactDiv) {
-            contactsContainer.removeChild(contactDiv); // Remove from the DOM
+            contactsContainer.removeChild(contactDiv); 
             console.log('Contact deleted successfully');
-            
-            // Clear the output pad
+    
             output.innerText = '0';
             outputName.innerText = '';
             enteredDigits = '0';
@@ -140,6 +138,7 @@ openList.addEventListener('click', function () {
 });
 
 enteredDigits = '0'; //initial output
+
 
 // Event listener for "Backspace" button
 backspace.addEventListener('click', function (e) {
