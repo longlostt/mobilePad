@@ -15,6 +15,7 @@ const Contact = require('./models/Contact');
 
 
 // Middleware setup
+app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -53,23 +54,45 @@ app.get('/index', requireLogin, async (req, res) => {
     res.render('index', { contacts });
 });
 
-app.post('/contacts', requireLogin, async (req, res) => {
-    const { name, phone } = req.body;
-    const userId = req.session.user_id;
-    console.log("Received request to add contact:", { name, phone, userId });
-    
-    try {
-        const newContact = new Contact({ name, phone, user: userId });
-        console.log("New contact object created:", newContact);
-        await newContact.save();
-        console.log("Contact saved successfully");
-        res.json({ success: true, message: 'Contact saved successfully!' });
-    } catch (error) {
-        console.error("Error saving contact:", error);
-        res.status(500).json({ success: false, message: 'Failed to save contact' });
+
+// GET /api/contacts - Fetch contacts and userID
+app.get('/api/contacts', requireLogin, async (req, res) => {
+    const userID = req.session.user_id;
+    const contacts = await Contact.find({ user: userID });
+    res.json({ contacts, userID });
+});
+
+// POST /api/contacts - Add a new contact
+app.post('/api/contacts', requireLogin, async (req, res) => {  
+    console.log('Received body:', req.body);
+    const { name, phone, userId } = req.body;
+
+    if (!name || !phone || !userId) {
+        return res.status(400).json({ error: 'Name, phone, and userId are required' });
     }
-    
-    console.log("Finished processing request to add contact");
+
+    try {
+        const contact = new Contact({ name, phone, user: userId });
+        await contact.save();
+        res.status(201).json(contact);  
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to save contact' });
+    }
+});
+
+// DELETE /api/contacts/:id - Delete a contact by ID
+app.delete('/api/contacts/:id', requireLogin, async (req, res) => {
+    const contactId = req.params.id;
+
+    try {
+        const deletedContact = await Contact.findByIdAndDelete(contactId);
+        if (!deletedContact) {
+            return res.status(404).json({ error: 'Contact not found' });
+        }
+        res.status(200).json({ message: 'Contact deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete contact' });
+    }
 });
 
 

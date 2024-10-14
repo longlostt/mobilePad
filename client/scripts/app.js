@@ -1,7 +1,7 @@
 const output = document.querySelector('.pad-output .output');
 const outputName = document.querySelector('.pad-output .name');
 const openList = document.querySelector('.open-list');
-const contacts = document.querySelector('.contact-list');
+const contactsContainer = document.querySelector('.contact-list');
 const inputItems = document.querySelectorAll('.input-item');
 const backspace = document.querySelector('#backspace');
 const removeContact = document.querySelector('#removeContact');
@@ -9,181 +9,101 @@ const addContactButton = document.querySelector('.add-contact');
 const overlay = document.querySelector('.overlay');
 const alertsContainer = document.querySelector('.alerts');
 
-// Function to create an alert
-function createAlert(message, hasInput, buttonText, buttonText2, id) {
-    let secondButton = '';
-    if (buttonText2) {
-        secondButton = `<button class="alertButton cancelButton">${buttonText2}</button>`;
-    }
-    const alert = `
-    <div class="alert" id="${id}">
-        <p>${message}</p>
-        ${hasInput ? '<input type="text" class="alertInput">' : ''}
-        <div class="alertButtons"> 
-            <button id="nameButton" class="alertButton">${buttonText}</button>
-            ${secondButton ? `<button id="numberButton" class="alertButton cancelButton">${buttonText2}</button>` : ''}
-        </div>
-    </div>
-    `;
-    return alert;
-}
 
-// Function to show an alert
-function showAlert(alertMarkup) {
-    alertsContainer.innerHTML = alertMarkup;
-    alertsContainer.style.opacity = '1';
-    alertsContainer.style.zIndex = '9999';
-    overlay.style.opacity = '1';
-    overlay.style.zIndex = '9999';
-    document.querySelector('.alertButton').addEventListener('click', hideAlert); // works on the FIRST button 
-
-}
-
-// Function to hide an alert
-function hideAlert() {
-    alertsContainer.style.opacity = '0';
-    alertsContainer.style.zIndex = '0';
-    overlay.style.opacity = '0';
-    overlay.style.zIndex = '1';
-    alertsContainer.innerHTML = '';
-
-}
-
-// Event listener for "Add Contact" button
 addContactButton.addEventListener('click', async function () {
-    console.log('Add Contact button clicked');
-    if (output.innerText == '' || output.innerText == '0') {
-        console.log('No phone number entered');
-        const alertMarkup = createAlert("Input phone number first!", false, "OK", '', "numAlert");
-        showAlert(alertMarkup);
-    } else {
-        if (outputName.innerText == '') {
-            const alertMarkup = createAlert("Enter contact name:", true, "Save", "Cancel", "nameAlert");
-             showAlert(alertMarkup);
+    let prompt = window.prompt('Enter the name');
+    
+    if (!prompt || !output.innerText.trim()) {
+        console.error('Name or number is missing');
+        return;
+    }
 
-            document.querySelector('#nameButton').addEventListener('click', function () {
-                console.log('Save button clicked');
-                const contactName = document.querySelector('.alertInput').value;
-                const contactNumber = output.innerText;
-                console.log('Contact Name:', contactName);
-                console.log('Contact Number:', contactNumber);
+    let number = output.innerText.trim(); 
+    let name = prompt.trim(); 
 
-                // Send contact data to the server
-                fetch('/contacts', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ name: contactName, phone: contactNumber })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Server response:', data);
-                    if (data.success) {
-                        // Add contact to the UI
-                        const contactMarkup = `<div class="contact">
-                            <span class="contact-name">${contactName}</span>
-                            <span class="contact-number">${contactNumber}</span>
-                        </div>`;
-                        contacts.innerHTML += contactMarkup;
-                        hideAlert();
-                    } else {
-                        // Handle error
-                        console.log('Error:', data.message);
-                        const alertMarkup = createAlert(data.message, false, "OK", '', "errorAlert");
-                        showAlert(alertMarkup);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            });
+    try {
+        const response = await fetch('/api/contacts');
+        const data = await response.json();
+        const userID = data.userID;  
+        console.log('Data being sent:', { name, phone: number, userId: userID });
+        const saveResponse = await fetch('/api/contacts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, phone: number, userId: userID })  
+        });
+        
+        if (!saveResponse.ok) {
+            const errorText = await saveResponse.text();  
+            throw new Error(`Failed to save contact: ${errorText}`);
         }
+
+        const savedContact = await saveResponse.json();
+
+        // Only append the contact to the DOM after successful save
+        let contact = document.createElement('div');
+        contact.classList.add('contact');
+        contact.innerHTML = `
+            <p class="contact-name">${name}</p>
+            <p class="contact-number">${number}</p>
+        `;
+        contactsContainer.appendChild(contact);
+
+    } catch (error) {
+        console.error('Error:', error);
     }
 });
 
-// Event listener for "Remove Contact" button
-removeContact.addEventListener('click', function () {
-    const alertMarkup = createAlert("Who would you like to remove?", true, "Remove", "Nevermind", "delAlert");
-    showAlert(alertMarkup);
-});
+removeContact.addEventListener('click', async function () {
+    // Get the number from the output box
+    let number = output.innerText.trim();
+    
+    if (!number) {
+        console.error('No number inputted');
+        return;
+    }
+    
+    // Fetch user ID and contacts to find the corresponding contact
+    try {
+        const response = await fetch('/api/contacts');
+        const data = await response.json();
+        const userID = data.userID;
+        const contacts = data.contacts; // Assuming this is an array of contact objects
+        console.log('Contacts:', contacts);
 
-
-// add/delete
-document.addEventListener('click', function (event) {
-    const alertButton = event.target.closest('.alertButton');
-    const alert = event.target.closest('.alert');
-    if (alertButton && !alertButton.classList.contains('cancelButton') && alert && alert.id === 'addAlert') { // add
-        const inputField = alert.querySelector('.alertInput');
-        const newContactName = inputField.value;
-        if (!newContactName) {
-            const alertMarkup = createAlert("Please input a contact name", false, 'OK', false, '');
-            showAlert(alertMarkup);
-            return;
-        }
-        const newContactNumber = enteredDigits;
-        const newContact = document.createElement('div');
-        newContact.classList.add('contact');
-        newContact.innerHTML = `
-            <div class="contact-name">${newContactName}</div>
-            <div class="contact-number">${newContactNumber}</div>
-            <div class="call-btn input-item svg-item"><i class="fa-solid fa-phone"></i></div>
-        `;
-        contacts.appendChild(newContact);
-        hideAlert();
-        enteredDigits = '';
-        output.innerText = '0';
-        outputName.innerText = '';
-        inputField.value = '';
-    } else if (alertButton && !alertButton.classList.contains('cancelButton') && alert && alert.id === 'delAlert') { // delete
-        const inputField = alert.querySelector('.alertInput').value.toUpperCase();
-        let contactToRemove;
-
-        const contactByName = findContactByName(inputField.toUpperCase());
-        const contactByNumber = findContactByNumber(inputField);
-
-        if (contactByName && contactByNumber) { // duplicate logic
-            const alertMarkup = createAlert("Duplicate name and number found! Specify who", false, `Name: ${inputField}`, `Number: ${inputField}`, '');
-            showAlert(alertMarkup);
-
-            const nameButton = document.querySelector('#nameButton');
-            const numberButton = document.querySelector('#numberButton');
-            nameButton.addEventListener('click', function () {
-                contactToRemove = contactByName
-                contactToRemove.remove()
-            });
-            numberButton.addEventListener('click', function () {
-                contactToRemove = contactByNumber
-                contactToRemove.remove()
-            });
+        // Find the contact with the matching phone number
+        const contactToDelete = contacts.find(contact => contact.phone === number);
+        if (!contactToDelete) {
+            console.error('Contact not found');
             return;
         }
 
-        if (contactByName) {
-            contactToRemove = contactByName;
-            contactToRemove.remove();
-        }
-        if (contactByNumber) {
-            contactToRemove = contactByNumber;
-            contactToRemove.remove();
-        }
+        // Send DELETE request to the server
+        const deleteResponse = await fetch(`/api/contacts/${contactToDelete._id}`, {
+            method: 'DELETE',
+        });
 
-        if (!contactToRemove) {
-            const alertMarkup = createAlert("Contact couldn't be found", false, 'OK', false, '');
-            showAlert(alertMarkup);
-            return;
+        if (!deleteResponse.ok) {
+            throw new Error('Failed to delete contact');
         }
 
-        hideAlert();
-        enteredDigits = '';
-        output.innerText = '0';
-        outputName.innerText = '';
-        inputField.value = '';
+        // Remove the contact from the DOM
+        const contactDiv = findContactByNumber(number); // Use your existing function
+        if (contactDiv) {
+            contactsContainer.removeChild(contactDiv); // Remove from the DOM
+            console.log('Contact deleted successfully');
+            
+            // Clear the output pad
+            output.innerText = '0';
+            outputName.innerText = '';
+            enteredDigits = '0';
+        } else {
+            console.error('Contact not found in the DOM');
+        }
 
-
-    } else if (alertButton && alertButton.classList.contains('cancelButton')) {
-        hideAlert();
-        return
+    } catch (error) {
+        console.error('Error:', error);
     }
 });
 
@@ -241,10 +161,10 @@ inputItems.forEach(button => {
 });
 
 // keydown to output
-document.addEventListener('keydown', function (e) { 
+document.addEventListener('keydown', function (e) {
     if (e.target.closest('.alert')) return;
     if (e.key !== 'Backspace' && e.repeat) return;
-    
+
 
     const input = document.querySelector(`.input-item[data-key="${e.key}"]`);
     if (!input) return;
@@ -260,11 +180,11 @@ document.addEventListener('keydown', function (e) {
         enteredDigits += e.key;
         output.innerText = enteredDigits;
         updateName(enteredDigits);
-    } 
+    }
 });
 
 
-contacts.addEventListener('click', function (event) {
+contactsContainer.addEventListener('click', function (event) {
     const clickedContact = event.target.closest('.contact');
     if (clickedContact) {
         const contactNumber = clickedContact.querySelector('.contact-number').innerText;
@@ -274,9 +194,9 @@ contacts.addEventListener('click', function (event) {
 });
 
 // Event listener for clicking on the overlay to cancel
-overlay.addEventListener('click', function () {
-    hideAlert();
-});
+// overlay.addEventListener('click', function () {
+
+// });
 
 // Function to update the contact name in the output
 function updateName(number) {
@@ -291,7 +211,7 @@ function updateName(number) {
 }
 
 function findContactByName(name) {
-    return Array.from(contacts.children).find(contact => {
+    return Array.from(contactsContainer.children).find(contact => {
         const contactName = contact.querySelector('.contact-name').innerText;
         return contactName === name;
     });
@@ -299,7 +219,7 @@ function findContactByName(name) {
 
 // Function to find a contact by number
 function findContactByNumber(number) {
-    return Array.from(contacts.children).find(contact => {
+    return Array.from(contactsContainer.children).find(contact => {
         const contactNumber = contact.querySelector('.contact-number').innerText;
         return contactNumber === number;
     });

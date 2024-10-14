@@ -30,7 +30,7 @@ body {
 
 }
 
-.alerts {
+/* .alerts {
     opacity: 0;
     border: 0.1px solid black;
     z-index: 0;
@@ -94,7 +94,7 @@ input:focus::placeholder {
     background-color: rgba(255, 255, 255, 0.4);
     z-index: 1;
     transition: opacity 500ms ease;
-}
+} */
 
 ::-webkit-scrollbar {
     width: 8px;
