@@ -19,5 +19,5 @@ show dbs
 ```
 ### View at http://localhost:3000/
 
-## Stack
+## Technologies
 ### Node.js, MongoDB, Express.js
