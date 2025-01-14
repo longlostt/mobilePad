@@ -6,7 +6,6 @@ Node.JS
 
 ## Installation
 ```
-bash
 npm install
 npm i -g nodemon (for real-time updates)
 npm run dev
