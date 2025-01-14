@@ -7,6 +7,7 @@ Node.JS
 ## Installation
 ```
 git clone https://github.com/longlostt/mobilePad
+cd server
 npm install
 npm i -g nodemon (for real-time updates)
 npm run dev
