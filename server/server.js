@@ -27,7 +27,7 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
-    secret: 'your_secret_key', // replace with actual secret later
+    secret: process.env.SECRET, // replace with actual secret later
     resave: false,
     saveUninitialized: true
 }));
