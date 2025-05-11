@@ -7,13 +7,13 @@
     <title>Mobile Pad</title>
     <link rel="stylesheet" href="styles/style.css">
     <script src="scripts/app.js" defer></script>
+    <script type="text/javascript" src="scripts/twilio.js"></script>
     <script src="https://kit.fontawesome.com/c5c731253d.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
     <div class="overlay"></div>
     <div class="alerts"> </div>
-   
 
     <div class="wrapper">
         <div class="open-list">
@@ -22,12 +22,16 @@
         </div>
 
         <div class="contact-list">
-             <% contacts.forEach(contact => { %>
+            <% contacts.forEach(contact=> { %>
                 <div class="contact">
-                    <span class="contact-name"><%= contact.name %></span>
-                    <span class="contact-number"><%= contact.phone %></span>
+                    <span class="contact-name">
+                        <%= contact.name %>
+                    </span>
+                    <span class="contact-number">
+                        <%= contact.phone %>
+                    </span>
                 </div>
-            <% }) %> 
+                <% }) %>
         </div>
 
         <div class="container">
@@ -94,7 +98,7 @@
                 <div class="svg-item input-item" id="backspace" data-key="Backspace">
                     <i class="fa-solid fa-delete-left"></i>
                 </div>
-                
+
                 <div id="removeContact">
                     <i class="fa-solid fa-trash-can"></i>
                 </div>
@@ -102,6 +106,37 @@
             </div>
         </div>
     </div>
+
+    <script>
+        let device;
+        document.addEventListener('DOMContentLoaded', function () {
+            const phoneButton = document.getElementById('phone');
+            phoneButton.addEventListener('click', async () => {
+                const number = document.querySelector('.pad-output .output').innerText.trim();
+                if (!number || number === '0') {
+                    alert('Please enter a valid number to call.');
+                    return;
+                }
+                try {
+                    await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const response = await fetch('/token', { method: 'POST' });
+                    const { token } = await response.json();
+                    device = new Twilio.Device(token);
+                    device.connect({ params: { To: 'MyConferenceRoom' } });
+                    // fetch softphone functionality
+                    await fetch('/call', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ to: number }) // pass the number to call
+                    });
+                    console.log('Connecting to conference room and calling', number);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
+
 </body>
 
 </html>

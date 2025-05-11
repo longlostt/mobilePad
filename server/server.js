@@ -1,3 +1,8 @@
+require('dotenv').config();
+const twilio = require('twilio');
+const AccessToken = require('twilio').jwt.AccessToken;
+const VoiceGrant = AccessToken.VoiceGrant;
+
 const express = require('express');
 const app = express();
 const session = require('express-session');
@@ -13,24 +18,26 @@ connectDB()
 const User = require('./models/User');
 const Contact = require('./models/Contact');
 
+// twilio client setup
+const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 
-// Middleware setup
+// middleware setup
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
-    secret: 'your_secret_key', // Replace with actual secret later
+    secret: 'your_secret_key', // replace with actual secret later
     resave: false,
     saveUninitialized: true
 }));
 
-// Serve static files from the client/styles and client/scripts
+// serve static files from the client/styles and client/scripts
 app.use('/styles', express.static(path.join(__dirname, '../client/styles')));
 app.use('/scripts', express.static(path.join(__dirname, '../client/scripts')));
 app.use(flash());
 
-// Set up view engine
+// set up view engine
 app.set('view engine', 'ejs');
 app.set('views', [
     path.join(__dirname, 'views'), // server/views
@@ -59,14 +66,14 @@ app.get('/index', requireLogin, async (req, res) => {
 });
 
 
-// GET /api/contacts - Fetch contacts and userID
+// GET /api/contacts - fetch contacts and userID
 app.get('/api/contacts', requireLogin, async (req, res) => {
     const userID = req.session.user_id;
     const contacts = await Contact.find({ user: userID });
     res.json({ contacts, userID });
 });
 
-// POST /api/contacts - Add a new contact
+// POST /api/contacts - add a new contact
 app.post('/api/contacts', requireLogin, async (req, res) => {  
     console.log('Received body:', req.body);
     const { name, phone, userId } = req.body;
@@ -84,7 +91,7 @@ app.post('/api/contacts', requireLogin, async (req, res) => {
     }
 });
 
-// DELETE /api/contacts/:id - Delete a contact by ID
+// DELETE /api/contacts/:id - delete a contact by ID
 app.delete('/api/contacts/:id', requireLogin, async (req, res) => {
     const contactId = req.params.id;
 
@@ -162,13 +169,13 @@ app.post('/signup', async (req, res) => {
         messages.push('Passwords do not match!');
     }
 
-    // Check if the username already exists in the database
+    // check if the username already exists in the database
     const existingUser = await User.findOne({ username });
     if (existingUser) {
         messages.push('Username already exists!');
     }
 
-    // If there are messages, store them in flash and redirect to signup page
+    // if there are messages, store them in flash and redirect to signup page
     if (messages.length > 0) {
         req.flash('error', messages);
         return res.redirect('/signup');
@@ -183,7 +190,58 @@ app.post('/signup', async (req, res) => {
     return res.redirect('/login');
 });
 
+// TWILIO LOGIC 
 
+// twilio token 
+app.post('/token', (req, res) => {
+    const identity = req.session.user_id ? req.session.user_id.toString() : 'guest';
+    const voiceGrant = new VoiceGrant({
+        outgoingApplicationSid: process.env.TWILIO_APP_SID,
+        incomingAllow: true,
+    });
+
+    const token = new AccessToken(
+        process.env.TWILIO_SID,
+        process.env.TWILIO_API_KEY,
+        process.env.TWILIO_API_SECRET,
+        { identity }
+    );
+
+    token.addGrant(voiceGrant);
+    res.json({ token: token.toJwt() });
+});
+
+// TwiML app
+app.post('/twiml', (req, res) => {
+    const twiml = new twilio.twiml.VoiceResponse();
+    twiml.dial().conference('MyConferenceRoom');
+    res.type('text/xml');
+    res.send(twiml.toString());
+});
+
+// call status 
+app.post('/call-status', (req, res) => {
+    const callStatus = req.body.CallStatus;
+    console.log(`Call Status: ${callStatus}`);
+    res.status(200).send('Status received');
+});
+
+// softphone call 
+app.post('/call', async (req, res) => {
+    try {
+        const { to } = req.body; 
+        const call = await client.calls.create({
+            url: `${process.env.BASE_URL}/twiml`,
+            to: to,  
+            from: process.env.TWILIO_PHONE_NUMBER, // will expire after a while
+            statusCallback: `${process.env.BASE_URL}/call-status`,
+        });
+        res.json({ message: 'Call initiated!', callSid: call.sid });
+    } catch (error) {
+        console.error('Error initiating call:', error);
+        res.status(500).json({ error: 'Failed to initiate call' });
+    }
+});
 
 
 app.listen(3000, () => {
