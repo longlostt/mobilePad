@@ -26,6 +26,7 @@
                 <div class="contact">
                     <span class="contact-name">
                         <%= contact.name %>
+
                     </span>
                     <span class="contact-number">
                         <%= contact.phone %>
@@ -109,32 +110,36 @@
 
     <script>
         let device;
-        document.addEventListener('DOMContentLoaded', function () {
-            const phoneButton = document.getElementById('phone');
-            phoneButton.addEventListener('click', async () => {
-                const number = document.querySelector('.pad-output .output').innerText.trim();
-                if (!number || number === '0') {
-                    alert('Please enter a valid number to call.');
-                    return;
-                }
-                try {
-                    await navigator.mediaDevices.getUserMedia({ audio: true });
-                    const response = await fetch('/token', { method: 'POST' });
-                    const { token } = await response.json();
-                    device = new Twilio.Device(token);
-                    device.connect({ params: { To: 'MyConferenceRoom' } });
-                    // fetch softphone functionality
-                    await fetch('/call', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ to: number }) // pass the number to call
-                    });
-                    console.log('Connecting to conference room and calling', number);
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            });
+
+        const phoneButton = document.getElementById('phone');
+        // const contact = document.querySelector('.contact')
+        // contact.addEventListener('click', async () => {
+
+        // })
+        phoneButton.addEventListener('click', async () => {
+            const number = document.querySelector('.pad-output .output').innerText.trim();
+            if (!number || number === '0') {
+                alert('Please enter a valid number to call.');
+                return;
+            }
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                const response = await fetch('/token', { method: 'POST' });
+                const { token } = await response.json();
+                device = new Twilio.Device(token);
+                device.connect({ params: { To: 'MyConferenceRoom' } });
+                // fetch softphone functionality
+                await fetch('/call', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ to: number }) // pass the number to call
+                });
+                console.log('Connecting to conference room and calling', number);
+            } catch (error) {
+                console.error('Error:', error);
+            }
         });
+
     </script>
 
 </body>

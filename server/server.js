@@ -1,4 +1,3 @@
-require('dotenv').config();
 const twilio = require('twilio');
 const AccessToken = require('twilio').jwt.AccessToken;
 const VoiceGrant = AccessToken.VoiceGrant;
@@ -11,6 +10,7 @@ const morgan = require('morgan');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 const connectDB = require('./config/db'); // db connection
 connectDB()
